@@ -1,1 +1,96 @@
-<h1>hello world</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<h2>Get the keycodes <a href="https://keycode.info/">HERE</a></h2>
+	Thickness:<br>
+	<label>1<input type="text" class="shortcut" data-selector=".thickness:nth-of-type(1)"></label><br>
+	<label>2<input type="text" class="shortcut" data-selector=".thickness:nth-of-type(2)"></label><br>
+	<label>3<input type="text" class="shortcut" data-selector=".thickness:nth-of-type(3)"></label><br>
+	<label>4<input type="text" class="shortcut" data-selector=".thickness:nth-of-type(4)"></label><br>
+	<label>5<input type="text" class="shortcut" data-selector=".thickness:nth-of-type(5)"></label><br>
+	Tools:<br>
+	<label>pen<input type="text" class="shortcut" data-selector=".tool.pen"></label><br>
+	<label>eraser<input type="text" class="shortcut" data-selector=".tool.ers"></label><br>
+	<label>line<input type="text" class="shortcut" data-selector=".tool.lin"></label><br>
+	<label>fill<input type="text" class="shortcut" data-selector=".tool.fil"></label><br>
+	<label>undo<input type="text" class="shortcut" data-selector=".tool.undo"></label><br>
+	<label>redo<input type="text" class="shortcut" data-selector=".tool.redo"></label><br>
+	Colors:<br>
+	<label>1<input type="text" class="shortcut" data-selector=".color:nth-of-type(1)"></label><br>
+	<label>2<input type="text" class="shortcut" data-selector=".color:nth-of-type(2)"></label><br>
+	<label>3<input type="text" class="shortcut" data-selector=".color:nth-of-type(3)"></label><br>
+	<label>4<input type="text" class="shortcut" data-selector=".color:nth-of-type(4)"></label><br>
+	<label>5<input type="text" class="shortcut" data-selector=".color:nth-of-type(5)"></label><br>
+	<label>6<input type="text" class="shortcut" data-selector=".color:nth-of-type(6)"></label><br>
+	<label>7<input type="text" class="shortcut" data-selector=".color:nth-of-type(7)"></label><br>
+	<label>8<input type="text" class="shortcut" data-selector=".color:nth-of-type(8)"></label><br>
+	<label>9<input type="text" class="shortcut" data-selector=".color:nth-of-type(9)"></label><br>
+	<label>10<input type="text" class="shortcut" data-selector=".color:nth-of-type(10)"></label><br>
+	<label>11<input type="text" class="shortcut" data-selector=".color:nth-of-type(11)"></label><br>
+	<label>12<input type="text" class="shortcut" data-selector=".color:nth-of-type(12)"></label><br>
+	<label>13<input type="text" class="shortcut" data-selector=".color:nth-of-type(13)"></label><br>
+	<label>14<input type="text" class="shortcut" data-selector=".color:nth-of-type(14)"></label><br>
+	<label>15<input type="text" class="shortcut" data-selector=".color:nth-of-type(15)"></label><br>
+	Opactity:<br>
+	<label>0.2<input type="text" class="shortcut" data-selector=".bxopacity input[type=range]" data-value="0.2"></label><br>
+	<label>0.5<input type="text" class="shortcut" data-selector=".bxopacity input[type=range]" data-value="0.5"></label><br>
+	<label>0.7<input type="text" class="shortcut" data-selector=".bxopacity input[type=range]" data-value="0.7"></label><br>
+	<label>0.1<input type="text" class="shortcut" data-selector=".bxopacity input[type=range]" data-value="1"></label><br>
+	<button id="generate">generate</button><br>
+	Code to paste in the js console:
+	<textarea id="generatedCode" cols="30" rows="10"></textarea>
+	<script>
+		//load conf
+		let shortcutsInputs = document.querySelectorAll("input.shortcut")
+		shortcutsInputs.forEach((shortcutInput) => {
+			shortcutInput.value = localStorage.getItem('shortcut-' + shortcutInput.dataset["selector"] + (shortcutInput.dataset["value"] || ""));
+		});
+
+		document.querySelector("#generate").onclick = function() {
+
+
+			let generatedScript = `
+			document.onkeyup = function(e)
+			{
+				console.log(e.which);
+				switch(e.which)
+				{
+			`;
+			
+			let shortcutsInputs = document.querySelectorAll("input.shortcut")
+			shortcutsInputs.forEach((shortcutInput) => {
+
+				if(shortcutInput.value != '') {
+					generatedScript += `
+					case ${shortcutInput.value} :`
+						if(shortcutInput.dataset["value"] !== undefined) {
+							generatedScript += `
+							document.querySelector("${shortcutInput.dataset["selector"]}").value = ${shortcutInput.dataset["value"]};`
+						}else{
+							generatedScript += `
+							document.querySelector("${shortcutInput.dataset["selector"]}").click();`
+						}
+						generatedScript += `
+						break;
+					`
+				}
+
+				//save conf
+				localStorage.setItem('shortcut-' + shortcutInput.dataset["selector"] + (shortcutInput.dataset["value"] || ""), shortcutInput.value);
+			});
+
+			generatedScript += `
+				}
+			}
+			`;
+
+			document.querySelector("#generatedCode").value = generatedScript;
+		}
+	</script>
+</body>
+</html>
